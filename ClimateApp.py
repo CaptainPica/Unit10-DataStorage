@@ -32,15 +32,18 @@ sel = [Measurement.date, Measurement.prcp]
 qry = session.query(*sel).filter(Measurement.date >= early_date).\
 group_by(Measurement.date).\
 order_by(Measurement.date.desc()).all()
+#Creating dictionary
 rain = {pair[0]:pair[1] for pair in qry}
 
 #Data for the stations path.
 qry2 = session.query(Measurement.station).distinct().all()
+#Creating list
 stations = list(ravel(qry2))
 
 #Data for the temperature path.
 qry3 = session.query(Measurement.date,Measurement.tobs).\
 filter(Measurement.date >= early_date).all()
+#Creating list.
 temps = [list(pear) for pear in qry3]
 
 app = Flask(__name__)
@@ -77,6 +80,7 @@ def sunshine():
 @app.route("/<start>/<end>")
 def groupies(start, end = late_date):
     #Recreating stuff in this thread so it can be used here in said thread
+    #Apparently can use Use Thread instead? Found out in class. Will check it out. No time to implement.
     #Setting things up
     engine = create_engine("sqlite:///Resources/hawaii.sqlite")
     # reflect an existing database into a new model
@@ -93,6 +97,7 @@ def groupies(start, end = late_date):
     qry4 = session.query(*ins).filter(Measurement.station == station_counts[0][1]).\
     filter(Measurement.date >= start).\
     filter(Measurement.date <= end).all()
+    #Creating list to jsonify
     wanted = [list(groups) for groups in qry4]
     return jsonify(wanted[0])
 
